@@ -34,12 +34,28 @@ router.all('/demo-data', async (req, res) => {
     // 1. Create or update Super Admin
     console.log('1. Creating Super Admin...');
     const superAdminPassword = await bcrypt.hash('admin123', 10);
-    await pool.query(`
-      INSERT INTO super_admins (email, password_hash, first_name, last_name)
-      VALUES ($1, $2, $3, $4)
-      ON CONFLICT (email) DO UPDATE
-      SET password_hash = $2
-    `, ['admin@comityspace.com', superAdminPassword, 'Super', 'Admin']);
+
+    // Check if super admin exists first
+    const existingSuperAdmin = await pool.query(
+      'SELECT id FROM super_admins WHERE email = $1',
+      ['admin@comityspace.com']
+    );
+
+    if (existingSuperAdmin.rows.length > 0) {
+      // Update existing
+      await pool.query(
+        'UPDATE super_admins SET password_hash = $1 WHERE email = $2',
+        [superAdminPassword, 'admin@comityspace.com']
+      );
+      console.log('Updated existing super admin');
+    } else {
+      // Insert new
+      await pool.query(`
+        INSERT INTO super_admins (email, password_hash, first_name, last_name)
+        VALUES ($1, $2, $3, $4)
+      `, ['admin@comityspace.com', superAdminPassword, 'Super', 'Admin']);
+      console.log('Created new super admin');
+    }
     results.push('✅ Super Admin: admin@comityspace.com / admin123');
 
     // 2. Create Organizations
@@ -47,18 +63,45 @@ router.all('/demo-data', async (req, res) => {
     const redCrossPassword = await bcrypt.hash('redcross123', 10);
     const foodBankPassword = await bcrypt.hash('foodbank123', 10);
 
-    const orgResult = await pool.query(`
-      INSERT INTO organizations (name, shared_password_hash, description, is_active)
-      VALUES
-        ($1, $2, 'Demo Red Cross Organization', true),
-        ($3, $4, 'Demo Food Bank Organization', true)
-      ON CONFLICT (name) DO UPDATE
-      SET shared_password_hash = EXCLUDED.shared_password_hash
-      RETURNING id, name
-    `, ['Demo Red Cross', redCrossPassword, 'Demo Food Bank', foodBankPassword]);
+    // Red Cross
+    let redCrossId;
+    const existingRedCross = await pool.query(
+      'SELECT id FROM organizations WHERE name = $1',
+      ['Demo Red Cross']
+    );
+    if (existingRedCross.rows.length > 0) {
+      redCrossId = existingRedCross.rows[0].id;
+      await pool.query(
+        'UPDATE organizations SET shared_password_hash = $1 WHERE id = $2',
+        [redCrossPassword, redCrossId]
+      );
+    } else {
+      const result = await pool.query(
+        'INSERT INTO organizations (name, shared_password_hash, description, is_active) VALUES ($1, $2, $3, true) RETURNING id',
+        ['Demo Red Cross', redCrossPassword, 'Demo Red Cross Organization']
+      );
+      redCrossId = result.rows[0].id;
+    }
 
-    const redCrossId = orgResult.rows.find(r => r.name === 'Demo Red Cross')?.id;
-    const foodBankId = orgResult.rows.find(r => r.name === 'Demo Food Bank')?.id;
+    // Food Bank
+    let foodBankId;
+    const existingFoodBank = await pool.query(
+      'SELECT id FROM organizations WHERE name = $1',
+      ['Demo Food Bank']
+    );
+    if (existingFoodBank.rows.length > 0) {
+      foodBankId = existingFoodBank.rows[0].id;
+      await pool.query(
+        'UPDATE organizations SET shared_password_hash = $1 WHERE id = $2',
+        [foodBankPassword, foodBankId]
+      );
+    } else {
+      const result = await pool.query(
+        'INSERT INTO organizations (name, shared_password_hash, description, is_active) VALUES ($1, $2, $3, true) RETURNING id',
+        ['Demo Food Bank', foodBankPassword, 'Demo Food Bank Organization']
+      );
+      foodBankId = result.rows[0].id;
+    }
 
     results.push(`✅ Organization: Demo Red Cross (ID: ${redCrossId}) / redcross123`);
     results.push(`✅ Organization: Demo Food Bank (ID: ${foodBankId}) / foodbank123`);
@@ -66,40 +109,36 @@ router.all('/demo-data', async (req, res) => {
     // 3. Create Users
     console.log('3. Creating Users...');
 
+    // Helper function to create or update user
+    const createOrUpdateUser = async (email, firstName, lastName, role, orgId) => {
+      const existing = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+      if (existing.rows.length > 0) {
+        await pool.query(
+          'UPDATE users SET first_name = $1, last_name = $2, role = $3, organization_id = $4 WHERE email = $5',
+          [firstName, lastName, role, orgId, email]
+        );
+      } else {
+        await pool.query(
+          'INSERT INTO users (email, first_name, last_name, role, organization_id, profile_completed) VALUES ($1, $2, $3, $4, $5, false)',
+          [email, firstName, lastName, role, orgId]
+        );
+      }
+    };
+
     // Red Cross Admin
-    await pool.query(`
-      INSERT INTO users (email, first_name, last_name, role, organization_id, profile_completed)
-      VALUES ($1, $2, $3, $4, $5, false)
-      ON CONFLICT (email) DO UPDATE
-      SET organization_id = $5, role = $4
-    `, ['admin@redcross.local', 'Admin', 'RedCross', 'nonprofit_admin', redCrossId]);
+    await createOrUpdateUser('admin@redcross.local', 'Admin', 'RedCross', 'nonprofit_admin', redCrossId);
     results.push('✅ User: admin@redcross.local (Admin) - password: redcross123');
 
     // Red Cross Volunteer
-    await pool.query(`
-      INSERT INTO users (email, first_name, last_name, role, organization_id, profile_completed)
-      VALUES ($1, $2, $3, $4, $5, false)
-      ON CONFLICT (email) DO UPDATE
-      SET organization_id = $5, role = $4
-    `, ['sandy@gmail.com', 'Sandy', 'Cheeks', 'volunteer', redCrossId]);
+    await createOrUpdateUser('sandy@gmail.com', 'Sandy', 'Cheeks', 'volunteer', redCrossId);
     results.push('✅ User: sandy@gmail.com (Volunteer) - password: redcross123');
 
     // Food Bank Admin
-    await pool.query(`
-      INSERT INTO users (email, first_name, last_name, role, organization_id, profile_completed)
-      VALUES ($1, $2, $3, $4, $5, false)
-      ON CONFLICT (email) DO UPDATE
-      SET organization_id = $5, role = $4
-    `, ['manager@foodbank.local', 'Food Bank', 'Manager', 'nonprofit_admin', foodBankId]);
+    await createOrUpdateUser('manager@foodbank.local', 'Food Bank', 'Manager', 'nonprofit_admin', foodBankId);
     results.push('✅ User: manager@foodbank.local (Admin) - password: foodbank123');
 
     // Food Bank Volunteer
-    await pool.query(`
-      INSERT INTO users (email, first_name, last_name, role, organization_id, profile_completed)
-      VALUES ($1, $2, $3, $4, $5, false)
-      ON CONFLICT (email) DO UPDATE
-      SET organization_id = $5, role = $4
-    `, ['john@volunteer.com', 'John', 'Doe', 'volunteer', foodBankId]);
+    await createOrUpdateUser('john@volunteer.com', 'John', 'Doe', 'volunteer', foodBankId);
     results.push('✅ User: john@volunteer.com (Volunteer) - password: foodbank123');
 
     console.log('🎉 Demo data setup complete!');
@@ -118,10 +157,13 @@ router.all('/demo-data', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Error setting up demo data:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: 'Failed to set up demo data',
-      error: error.message
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      errorType: error.constructor.name
     });
   }
 });
