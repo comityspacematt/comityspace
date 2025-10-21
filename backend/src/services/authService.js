@@ -220,15 +220,20 @@ class AuthService {
     try {
       // First try super admin login
       try {
+        console.log('Attempting super admin login...');
         const superAdminResult = await this.superAdminLogin(email, password);
+        console.log('✅ Super admin login successful, returning result');
         return superAdminResult;
       } catch (superAdminError) {
+        console.log('Super admin login failed, trying organization login:', superAdminError.message);
         // If super admin login fails, try organization login
         const orgResult = await this.organizationLogin(email, password);
+        console.log('✅ Organization login successful');
         return orgResult;
       }
 
     } catch (error) {
+      console.log('❌ Both login attempts failed:', error.message);
       throw new Error('Invalid email or password');
     }
   }
