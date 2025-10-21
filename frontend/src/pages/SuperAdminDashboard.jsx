@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 import DashboardService from '../services/dashboardService';
@@ -13,14 +13,14 @@ const SuperAdminDashboard = () => {
   const navigate = useNavigate();
 
   // Get active tab from URL
-  const getActiveTabFromURL = () => {
+  const getActiveTabFromURL = useCallback(() => {
     const path = location.pathname;
     if (path === '/super-admin' || path === '/super-admin/overview') return 'overview';
     if (path === '/super-admin/organizations') return 'organizations';
     if (path === '/super-admin/users') return 'users';
     if (path === '/super-admin/analytics') return 'analytics';
     return 'overview'; // default
-  };
+  }, [location.pathname]);
 
   const [activeTab, setActiveTab] = useState(getActiveTabFromURL());
   const [overviewData, setOverviewData] = useState(null);
@@ -32,10 +32,10 @@ const SuperAdminDashboard = () => {
       console.log('📊 Fetching overview data...');
       setLoading(true);
       setError('');
-      
+
       const result = await DashboardService.getSuperAdminDashboard();
       console.log('✅ Overview API response:', result);
-      
+
       if (result.success && result.data) {
         setOverviewData(result.data);
         console.log('📈 Overview data loaded');
@@ -59,7 +59,7 @@ const SuperAdminDashboard = () => {
     if (location.pathname === '/super-admin') {
       navigate('/super-admin/overview', { replace: true });
     }
-  }, [location.pathname, navigate]);
+  }, [location.pathname, navigate, getActiveTabFromURL]);
 
   useEffect(() => {
     if (activeTab === 'overview') {

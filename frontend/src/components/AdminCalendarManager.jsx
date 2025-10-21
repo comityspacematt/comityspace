@@ -52,7 +52,7 @@ const AdminCalendarManager = () => {
         setSelectedDate(new Date());
       }
     }
-  }, [view]);
+  }, [view, selectedDate]);
 
   const fetchEvents = async () => {
     try {

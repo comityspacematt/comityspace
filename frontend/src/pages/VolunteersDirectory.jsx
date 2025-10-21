@@ -48,30 +48,30 @@ const VolunteersDirectory = () => {
     return matchesSearch && matchesRole;
   }) || [];
 
-  // Format last login date
-  const formatLastLogin = (dateString) => {
-    if (!dateString) return 'Never';
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 1) return 'Today';
-    if (diffDays <= 7) return `${diffDays} days ago`;
-    if (diffDays <= 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
-    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-  };
+  // Format last login date - currently not used but kept for future use
+  // const formatLastLogin = (dateString) => {
+  //   if (!dateString) return 'Never';
+  //   const date = new Date(dateString);
+  //   const now = new Date();
+  //   const diffTime = Math.abs(now - date);
+  //   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  //
+  //   if (diffDays === 1) return 'Today';
+  //   if (diffDays <= 7) return `${diffDays} days ago`;
+  //   if (diffDays <= 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
+  //   return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  // };
 
-  // Format join date
-  const formatJoinDate = (dateString) => {
-    if (!dateString) return 'Unknown';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric',
-      year: 'numeric' 
-    });
-  };
+  // Format join date - currently not used but kept for future use
+  // const formatJoinDate = (dateString) => {
+  //   if (!dateString) return 'Unknown';
+  //   const date = new Date(dateString);
+  //   return date.toLocaleDateString('en-US', {
+  //     month: 'short',
+  //     day: 'numeric',
+  //     year: 'numeric'
+  //   });
+  // };
 
   // Get role badge color
   const getRoleBadgeColor = (role) => {

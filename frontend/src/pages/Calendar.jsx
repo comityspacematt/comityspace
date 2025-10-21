@@ -19,6 +19,7 @@ const Calendar = () => {
 
   useEffect(() => {
     fetchEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate, view]);
 
   const fetchEvents = async () => {
@@ -124,7 +125,7 @@ const Calendar = () => {
     const year = selectedDate.getFullYear();
     const month = selectedDate.getMonth();
     const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
+    // const lastDay = new Date(year, month + 1, 0); // Not used
     const startDate = new Date(firstDay);
     startDate.setDate(startDate.getDate() - firstDay.getDay());
 

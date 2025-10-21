@@ -62,6 +62,7 @@ const MyTasks = () => {
   // Load tasks on component mount and filter changes
   useEffect(() => {
     loadTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   // Handle filter changes

@@ -180,10 +180,6 @@ const SuperAdminUserManager = () => {
     }
   };
 
-  const handleRemoveUser = async (email, organizationName) => {
-    // This is now just an alias for delete - keeping for backward compatibility
-    await handleDeleteUser(email, organizationName);
-  };
 
   const handleUpdateUserRole = async (email, newRole, organizationId) => {
     try {
