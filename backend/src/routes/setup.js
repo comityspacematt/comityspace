@@ -5,18 +5,27 @@ const bcrypt = require('bcryptjs');
 const router = express.Router();
 
 // POST /api/setup/demo-data - Set up demo data (USE WITH CAUTION!)
-router.post('/demo-data', async (req, res) => {
+// Can also use GET for easier browser access
+router.all('/demo-data', async (req, res) => {
   try {
     console.log('🚀 Setting up demo data...');
+    console.log('Query params:', req.query);
+    console.log('Body params:', req.body);
 
     // Security check - only allow in development or with special key
-    const setupKey = req.body.setupKey || req.query.setupKey;
+    const setupKey = req.query.setupKey || req.body?.setupKey;
     const expectedKey = process.env.SETUP_KEY || 'demo-setup-key-12345';
+
+    console.log('Received key:', setupKey);
+    console.log('Expected key:', expectedKey);
 
     if (setupKey !== expectedKey) {
       return res.status(403).json({
         success: false,
-        message: 'Invalid setup key. Provide setupKey in request body or query.'
+        message: 'Invalid setup key. Provide setupKey in request body or query.',
+        received: setupKey,
+        query: req.query,
+        body: req.body
       });
     }
 
