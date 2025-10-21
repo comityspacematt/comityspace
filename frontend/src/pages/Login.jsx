@@ -208,12 +208,16 @@ const Login = () => {
 
         {/* Demo Credentials */}
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-yellow-800 mb-2">Demo Credentials:</h3>
+          <h3 className="text-sm font-medium text-yellow-800 mb-2">Demo Credentials (Local Database):</h3>
           <div className="text-xs text-yellow-700 space-y-1">
             <div><strong>Super Admin:</strong> admin@comityspace.com / admin123</div>
             <div><strong>Red Cross Admin:</strong> admin@redcross.local / redcross123</div>
             <div><strong>Volunteer:</strong> sandy@gmail.com / redcross123</div>
+            <div><strong>Food Bank Admin:</strong> manager@foodbank.local / foodbank123</div>
           </div>
+          <p className="text-xs text-yellow-600 mt-2 italic">
+            Note: Production database may have different credentials
+          </p>
         </div>
       </div>
     </div>
