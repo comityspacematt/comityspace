@@ -72,22 +72,32 @@ class AuthService {
   // Super Admin login (individual password)
   static async superAdminLogin(email, password) {
     try {
+      console.log('🔐 Super Admin Login Attempt:', email);
       const result = await db.query(`
-        SELECT * FROM super_admins 
+        SELECT * FROM super_admins
         WHERE email = $1 AND is_active = true
       `, [email.toLowerCase()]);
 
+      console.log('Super admin query result rows:', result.rows.length);
+
       if (result.rows.length === 0) {
+        console.log('❌ No super admin found for email:', email);
         throw new Error('Invalid email or password');
       }
 
       const superAdmin = result.rows[0];
+      console.log('✅ Super admin found, checking password...');
 
       // Check password
       const isValidPassword = await this.comparePassword(password, superAdmin.password_hash);
+      console.log('Password valid:', isValidPassword);
+
       if (!isValidPassword) {
+        console.log('❌ Password does not match for super admin');
         throw new Error('Invalid email or password');
       }
+
+      console.log('✅ Super admin password validated successfully');
 
       // Update last login
       await db.query(
