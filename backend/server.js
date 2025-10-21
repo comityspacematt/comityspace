@@ -20,6 +20,7 @@ app.use(helmet()); // Security headers
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
+  'https://comityspace.netlify.app', // Production Netlify URL
   process.env.FRONTEND_URL,
   process.env.NETLIFY_URL
 ].filter(Boolean); // Remove any undefined values
@@ -29,10 +30,16 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.some(allowed => origin.includes(allowed))) {
+    // Check if origin matches any allowed origin exactly or contains netlify.app
+    const isAllowed = allowedOrigins.indexOf(origin) !== -1 ||
+                      origin.includes('netlify.app') ||
+                      origin.includes('localhost');
+
+    if (isAllowed) {
       callback(null, true);
     } else {
       console.log('⚠️ CORS blocked origin:', origin);
+      console.log('Allowed origins:', allowedOrigins);
       callback(new Error('Not allowed by CORS'));
     }
   },
