@@ -94,6 +94,7 @@ app.use('/api/super-admin', require('./src/routes/super-admin'));
 app.use('/api/calendar', require('./src/routes/calendar'));
 app.use('/api/documents', require('./src/routes/documents'));
 app.use('/api/users', require('./src/routes/users'));
+app.use('/api/setup', require('./src/routes/setup')); // Demo data setup endpoint
 
 // Error handling middleware
 app.use((err, req, res, next) => {
