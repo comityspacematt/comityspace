@@ -168,4 +168,73 @@ router.all('/demo-data', async (req, res) => {
   }
 });
 
+// POST /api/setup/super-admin - Create specific super admin
+router.all('/super-admin', async (req, res) => {
+  try {
+    console.log('🚀 Creating Super Admin...');
+
+    // Security check
+    const setupKey = req.query.setupKey || req.body?.setupKey;
+    const expectedKey = process.env.SETUP_KEY || 'demo-setup-key-12345';
+
+    if (setupKey !== expectedKey) {
+      return res.status(403).json({
+        success: false,
+        message: 'Invalid setup key'
+      });
+    }
+
+    const email = 'matt@comityspace.com';
+    const password = 'Comity300509$';
+    const firstName = 'Matt';
+    const lastName = 'Stockwell';
+
+    // Hash the password
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    // Check if super admin already exists
+    const existing = await pool.query(
+      'SELECT id FROM super_admins WHERE email = $1',
+      [email]
+    );
+
+    let action;
+    if (existing.rows.length > 0) {
+      // Update existing
+      await pool.query(
+        'UPDATE super_admins SET password_hash = $1, first_name = $2, last_name = $3 WHERE email = $4',
+        [passwordHash, firstName, lastName, email]
+      );
+      action = 'updated';
+      console.log('✅ Updated existing Super Admin');
+    } else {
+      // Create new
+      await pool.query(
+        'INSERT INTO super_admins (email, password_hash, first_name, last_name) VALUES ($1, $2, $3, $4)',
+        [email, passwordHash, firstName, lastName]
+      );
+      action = 'created';
+      console.log('✅ Created new Super Admin');
+    }
+
+    res.json({
+      success: true,
+      message: `Super Admin ${action} successfully`,
+      credentials: {
+        email: email,
+        password: '***hidden***',
+        note: 'Check your email for the password'
+      }
+    });
+
+  } catch (error) {
+    console.error('❌ Error creating super admin:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to create super admin',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;
