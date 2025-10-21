@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Due Date Processing</title>
+</head>
+<body>
+    <h1>Test Due Date Processing</h1>
+    <div id="output"></div>
+
+    <script>
+        // Test data - this is what the backend returns
+        const testActivity = {
+            "title": "Test",
+            "due_date": "2025-09-26T04:00:00.000Z",
+            "status": "assigned",
+            "created_at": "2025-09-24T10:58:26.390Z",
+            "creator_first_name": "Testing",
+            "creator_last_name": "Admin",
+            "assignee_first_name": "Jon",
+            "assignee_last_name": "Doe",
+            "assignee_email": "jon@testing.np",
+            "activity_type": "task_assigned"
+        };
+
+        // Helper function to get proper volunteer name
+        const getVolunteerDisplayName = (activity) => {
+            if (activity.assignee_first_name && activity.assignee_first_name.trim()) {
+                let name = activity.assignee_first_name.trim();
+                if (activity.assignee_last_name && activity.assignee_last_name.trim()) {
+                    name += ` ${activity.assignee_last_name.trim()}`;
+                }
+                return name;
+            }
+
+            if (activity.assignee_email) {
+                return activity.assignee_email;
+            }
+
+            return 'Someone';
+        };
+
+        // Exact formatActivityItem function from AdminDashboard.jsx
+        const formatActivityItem = (activity) => {
+            console.log('Formatting activity:', activity);
+            console.log('Due date value:', activity.due_date);
+            console.log('Due date type:', typeof activity.due_date);
+
+            if (!activity) {
+                return { description: 'No activity data', timestamp: 'Unknown', status: 'unknown' };
+            }
+
+            let description = '';
+
+            // Check if this is a task assignment
+            if (activity.activity_type === 'task_assigned') {
+                const assigneeName = getVolunteerDisplayName(activity);
+                description = `Task "${activity.title || 'Untitled'}" assigned to ${assigneeName}`;
+                console.log('Assignment description:', description);
+            } else {
+                // Fallback for other activity types
+                description = activity.description || activity.title || 'Activity occurred';
+                console.log('Other activity description:', description);
+            }
+
+            // Format due date instead of created date
+            const formatDueDate = (dateString) => {
+                if (!dateString) return 'No due date';
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffTime = date.getTime() - now.getTime();
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays < 0) return `${Math.abs(diffDays)} days overdue`;
+                if (diffDays === 0) return 'Due today';
+                if (diffDays === 1) return 'Due tomorrow';
+                if (diffDays <= 7) return `Due in ${diffDays} days`;
+                return `Due ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+            };
+
+            // Use due_date if available, otherwise fall back to created_at for timestamp
+            const timestamp = activity.due_date
+                ? formatDueDate(activity.due_date)
+                : activity.created_at
+                    ? new Date(activity.created_at).toLocaleString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    })
+                    : 'Recently';
+
+            const status = activity.status || 'assigned';
+
+            return { description, timestamp, status };
+        };
+
+        // Test the function
+        const result = formatActivityItem(testActivity);
+
+        document.getElementById('output').innerHTML = `
+            <h2>Test Results:</h2>
+            <h3>Input Activity:</h3>
+            <pre>${JSON.stringify(testActivity, null, 2)}</pre>
+
+            <h3>Formatted Result:</h3>
+            <pre>${JSON.stringify(result, null, 2)}</pre>
+
+            <h3>Expected:</h3>
+            <p>Description: Task "Test" assigned to Jon Doe</p>
+            <p>Timestamp: Should show due date (e.g., "Due Sep 26" or "Due in X days")</p>
+            <p>Status: assigned</p>
+        `;
+    </script>
+</body>
+</html>
