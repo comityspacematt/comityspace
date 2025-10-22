@@ -318,7 +318,7 @@ const AdminDashboard = () => {
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Total Volunteers</p>
                     <p className="text-2xl font-semibold text-gray-900">
-                      {dashboardData?.volunteerStats?.total_volunteers || '12'}
+                      {dashboardData?.volunteerStats?.total_volunteers || '0'}
                     </p>
                   </div>
                 </div>
@@ -332,7 +332,7 @@ const AdminDashboard = () => {
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Active Tasks</p>
                     <p className="text-2xl font-semibold text-gray-900">
-                      {dashboardData?.taskOverview?.total_tasks || '28'}
+                      {dashboardData?.taskOverview?.total_tasks || '0'}
                     </p>
                   </div>
                 </div>
@@ -346,7 +346,7 @@ const AdminDashboard = () => {
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Completed</p>
                     <p className="text-2xl font-semibold text-gray-900">
-                      {dashboardData?.taskOverview?.completed_assignments || '19'}
+                      {dashboardData?.taskOverview?.completed_assignments || '0'}
                     </p>
                   </div>
                 </div>
@@ -360,7 +360,7 @@ const AdminDashboard = () => {
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">This Week</p>
                     <p className="text-2xl font-semibold text-gray-900">
-                      {dashboardData?.upcomingEvents?.length || '3'}
+                      {dashboardData?.upcomingEvents?.length || '0'}
                     </p>
                   </div>
                 </div>
@@ -415,43 +415,18 @@ const AdminDashboard = () => {
                       })}
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                      {/* Sample activity data when no real data */}
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0">
-                          <div className="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center">
-                            <div className="text-sm">✅</div>
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-gray-900">Task "Food Drive Setup" completed by Sarah</p>
-                          <p className="text-xs text-gray-500">2 hours ago</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0">
-                          <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
-                            <div className="text-sm">👥</div>
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-gray-900">New volunteer Mike Johnson joined</p>
-                          <p className="text-xs text-gray-500">5 hours ago</p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0">
-                          <div className="w-8 h-8 bg-purple-50 rounded-full flex items-center justify-center">
-                            <div className="text-sm">📅</div>
-                          </div>
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-gray-900">Event "Community Meeting" scheduled</p>
-                          <p className="text-xs text-gray-500">1 day ago</p>
-                        </div>
-                      </div>
+                    <div className="text-center py-8">
+                      <div className="text-gray-400 text-4xl mb-3">📋</div>
+                      <h4 className="text-lg font-medium text-gray-900 mb-2">No recent activity</h4>
+                      <p className="text-gray-600 mb-4">
+                        Activity will appear here when you assign tasks to volunteers
+                      </p>
+                      <button
+                        onClick={() => navigate('/admin-dashboard/tasks')}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                      >
+                        Create Your First Task
+                      </button>
                     </div>
                   )}
 
@@ -486,25 +461,18 @@ const AdminDashboard = () => {
                       ))}
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                      {/* Sample events when no real data */}
-                      <div className="border-l-4 border-purple-400 pl-4">
-                        <h4 className="font-medium text-gray-900">Community Food Drive</h4>
-                        <p className="text-sm text-gray-600">Monthly food collection event</p>
-                        <p className="text-xs text-gray-500 mt-1">Tomorrow at 9:00 AM</p>
-                      </div>
-
-                      <div className="border-l-4 border-blue-400 pl-4">
-                        <h4 className="font-medium text-gray-900">Volunteer Training</h4>
-                        <p className="text-sm text-gray-600">New volunteer orientation session</p>
-                        <p className="text-xs text-gray-500 mt-1">Sept 15 at 2:00 PM</p>
-                      </div>
-
-                      <div className="border-l-4 border-green-400 pl-4">
-                        <h4 className="font-medium text-gray-900">Board Meeting</h4>
-                        <p className="text-sm text-gray-600">Monthly board meeting</p>
-                        <p className="text-xs text-gray-500 mt-1">Sept 20 at 7:00 PM</p>
-                      </div>
+                    <div className="text-center py-8">
+                      <div className="text-gray-400 text-4xl mb-3">📅</div>
+                      <h4 className="text-lg font-medium text-gray-900 mb-2">No upcoming events</h4>
+                      <p className="text-gray-600 mb-4">
+                        Create events to keep your volunteers informed and engaged
+                      </p>
+                      <button
+                        onClick={() => navigate('/admin-dashboard/events')}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                      >
+                        Schedule Your First Event
+                      </button>
                     </div>
                   )}
 
