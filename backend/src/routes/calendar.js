@@ -7,6 +7,8 @@ const {
   requireSameOrganization,
   validateOrganizationAccess
 } = require('../middleware/auth');
+const emailService = require('../services/emailService');
+const db = require('../config/database');
 
 // All calendar routes require authentication and organization validation
 router.use(authenticateToken);
@@ -101,12 +103,55 @@ router.post('/events', async (req, res) => {
       createdBy
     ];
 
-    const result = await require('../config/database').query(insertQuery, values);
+    const result = await db.query(insertQuery, values);
+    const event = result.rows[0];
+
+    // Get organization details
+    const orgQuery = await db.query(
+      'SELECT name FROM organizations WHERE id = $1',
+      [organizationId]
+    );
+    const organizationName = orgQuery.rows[0]?.name;
+
+    // Get creator name
+    const creatorQuery = await db.query(
+      'SELECT first_name, last_name FROM users WHERE id = $1',
+      [createdBy]
+    );
+    const creator = creatorQuery.rows[0];
+    const creatorName = creator ? `${creator.first_name || ''} ${creator.last_name || ''}`.trim() : null;
+
+    // Get all volunteer emails in the organization
+    const volunteersQuery = await db.query(`
+      SELECT DISTINCT email FROM whitelisted_emails
+      WHERE organization_id = $1 AND is_active = true
+    `, [organizationId]);
+
+    const recipientEmails = volunteersQuery.rows.map(v => v.email);
+
+    // Send event created notification (async, don't wait)
+    if (recipientEmails.length > 0) {
+      emailService.sendEventCreatedNotification({
+        eventTitle: title,
+        eventDescription: description,
+        startDate: start_date,
+        endDate: end_date,
+        startTime: start_time,
+        endTime: end_time,
+        location: location,
+        recipientEmails: recipientEmails,
+        organizationName: organizationName,
+        creatorName: creatorName
+      }).catch(err => {
+        console.error('Failed to send event created email:', err);
+        // Don't fail the request if email fails
+      });
+    }
 
     res.status(201).json({
       success: true,
       message: 'Event created successfully',
-      event: result.rows[0]
+      event: event
     });
 
   } catch (error) {
@@ -149,7 +194,7 @@ router.put('/events/:eventId', async (req, res) => {
       SELECT id FROM calendar_events 
       WHERE id = $1 AND organization_id = $2
     `;
-    const checkResult = await require('../config/database').query(checkQuery, [eventId, organizationId]);
+    const checkResult = await db.query(checkQuery, [eventId, organizationId]);
 
     if (checkResult.rows.length === 0) {
       return res.status(404).json({
@@ -181,7 +226,7 @@ router.put('/events/:eventId', async (req, res) => {
       eventId, organizationId
     ];
 
-    const result = await require('../config/database').query(updateQuery, values);
+    const result = await db.query(updateQuery, values);
 
     res.json({
       success: true,
@@ -212,18 +257,18 @@ router.delete('/events/:eventId', async (req, res) => {
     const organizationId = req.organizationId;
 
     // First delete all signups for this event
-    await require('../config/database').query(
+    await db.query(
       'DELETE FROM event_signups WHERE event_id = $1',
       [eventId]
     );
 
     // Then delete the event
     const deleteQuery = `
-      DELETE FROM calendar_events 
+      DELETE FROM calendar_events
       WHERE id = $1 AND organization_id = $2
       RETURNING title
     `;
-    const result = await require('../config/database').query(deleteQuery, [eventId, organizationId]);
+    const result = await db.query(deleteQuery, [eventId, organizationId]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({

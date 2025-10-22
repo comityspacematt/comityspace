@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
 const { authenticateToken } = require('../middleware/auth');
+const emailService = require('../services/emailService');
 
 // All admin routes require authentication first
 router.use(authenticateToken);
@@ -676,6 +677,36 @@ router.post('/volunteers', async (req, res) => {
         lastName
       ]);
     }
+
+    // Get organization details and password for welcome email
+    const orgQuery = await db.query(`
+      SELECT name, shared_password_hash FROM organizations WHERE id = $1
+    `, [organizationId]);
+
+    const organization = orgQuery.rows[0];
+
+    // Get admin details (person who added the volunteer)
+    const adminQuery = await db.query(`
+      SELECT first_name, last_name, email FROM users WHERE id = $1
+    `, [addedBy]);
+
+    const admin = adminQuery.rows[0];
+    const adminName = admin ? `${admin.first_name || ''} ${admin.last_name || ''}`.trim() : null;
+
+    // Send welcome email (async, don't wait for it)
+    // Note: Organization password is hashed, so we need to show a generic message
+    emailService.sendWelcomeEmail({
+      volunteerEmail: email.toLowerCase().trim(),
+      volunteerName: name,
+      role: role,
+      organizationName: organization.name,
+      organizationPassword: '[Contact your administrator for the organization password]',
+      adminName: adminName || 'Your administrator',
+      adminEmail: admin ? admin.email : null
+    }).catch(err => {
+      console.error('Failed to send welcome email:', err);
+      // Don't fail the request if email fails
+    });
 
     // Return response with parsed name information
     const volunteer = result.rows[0];
