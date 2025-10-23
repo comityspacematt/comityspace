@@ -21,6 +21,8 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
   'https://comityspace.netlify.app', // Production Netlify URL
+  'https://login.comityspace.com', // Custom domain
+  'http://login.comityspace.com', // Custom domain (HTTP)
   process.env.FRONTEND_URL,
   process.env.NETLIFY_URL
 ].filter(Boolean); // Remove any undefined values
@@ -30,10 +32,11 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
 
-    // Check if origin matches any allowed origin exactly or contains netlify.app
+    // Check if origin matches any allowed origin exactly or contains netlify.app or comityspace.com
     const isAllowed = allowedOrigins.indexOf(origin) !== -1 ||
                       origin.includes('netlify.app') ||
-                      origin.includes('localhost');
+                      origin.includes('localhost') ||
+                      origin.includes('comityspace.com');
 
     if (isAllowed) {
       callback(null, true);
