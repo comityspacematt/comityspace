@@ -100,7 +100,9 @@ const Calendar = () => {
   };
 
   const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
+    // Parse date as local time to avoid timezone shifts
+    const [year, month, day] = dateStr.split('T')[0].split('-');
+    const date = new Date(year, month - 1, day);
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -134,7 +136,9 @@ const Calendar = () => {
 
     for (let i = 0; i < 42; i++) {
       const dayEvents = events.filter(event => {
-        const eventDate = new Date(event.start_date);
+        // Parse event date as local time to avoid timezone shifts
+        const [year, month, day] = event.start_date.split('T')[0].split('-');
+        const eventDate = new Date(year, month - 1, day);
         return eventDate.toDateString() === currentDate.toDateString();
       });
 

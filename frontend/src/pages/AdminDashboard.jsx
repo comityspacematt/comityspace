@@ -455,7 +455,11 @@ const AdminDashboard = () => {
                           <h4 className="font-medium text-gray-900">{event.title}</h4>
                           <p className="text-sm text-gray-600">{event.description}</p>
                           <p className="text-xs text-gray-500 mt-1">
-                            {new Date(event.start_date).toLocaleDateString()} at {formatTime12Hour(event.start_time)}
+                            {(() => {
+                              const [year, month, day] = event.start_date.split('T')[0].split('-');
+                              const date = new Date(year, month - 1, day);
+                              return date.toLocaleDateString();
+                            })()} at {formatTime12Hour(event.start_time)}
                           </p>
                         </div>
                       ))}
@@ -521,7 +525,11 @@ const AdminDashboard = () => {
                             )}
                             <div className="flex items-center justify-between mt-2">
                               <span className="text-xs text-gray-500">
-                                {new Date(doc.created_at).toLocaleDateString()}
+                                {(() => {
+                                  const [year, month, day] = doc.created_at.split('T')[0].split('-');
+                                  const date = new Date(year, month - 1, day);
+                                  return date.toLocaleDateString();
+                                })()}
                               </span>
                               <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
                                 {doc.category}

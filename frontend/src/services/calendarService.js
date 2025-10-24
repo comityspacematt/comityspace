@@ -170,7 +170,9 @@ class CalendarService {
 
   // Helper functions for date/time formatting
   static formatDate(dateStr) {
-    const date = new Date(dateStr);
+    // Parse date as local time to avoid timezone shifts
+    const [year, month, day] = dateStr.split('T')[0].split('-');
+    const date = new Date(year, month - 1, day);
     return date.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',

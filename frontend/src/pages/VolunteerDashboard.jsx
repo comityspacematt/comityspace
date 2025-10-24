@@ -97,7 +97,9 @@ const VolunteerDashboard = () => {
 
   // Format date for display
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
+    // Parse date as local time to avoid timezone shifts
+    const [year, month, day] = dateString.split('T')[0].split('-');
+    const date = new Date(year, month - 1, day);
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -375,7 +377,10 @@ const VolunteerDashboard = () => {
                       <div className="flex-shrink-0">
                         <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
                           <span className="text-primary-600 font-medium">
-                            {new Date(event.start_date).getDate()}
+                            {(() => {
+                              const [year, month, day] = event.start_date.split('T')[0].split('-');
+                              return parseInt(day);
+                            })()}
                           </span>
                         </div>
                       </div>
