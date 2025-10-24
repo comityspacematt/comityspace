@@ -279,14 +279,14 @@ const AdminTaskManager = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Task Management</h2>
-        <div className="flex space-x-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Task Management</h2>
+        <div className="flex space-x-2 sm:space-x-3 w-full sm:w-auto">
           <button
             onClick={() => setView('list')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               view === 'list'
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
@@ -296,7 +296,7 @@ const AdminTaskManager = () => {
           </button>
           <button
             onClick={() => setView('create')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               view === 'create'
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
@@ -321,12 +321,12 @@ const AdminTaskManager = () => {
       {/* Task List View */}
       {view === 'list' && (
         <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-medium text-gray-900">All Tasks</h3>
-              
+          <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <h3 className="text-base sm:text-lg font-medium text-gray-900">All Tasks</h3>
+
               {/* Filters */}
-              <div className="flex space-x-4">
+              <div className="flex flex-wrap gap-2 sm:gap-4 w-full sm:w-auto">
                 <select
                   value={filters.status}
                   onChange={(e) => setFilters({...filters, status: e.target.value})}
@@ -356,15 +356,15 @@ const AdminTaskManager = () => {
             {tasks.length > 0 ? (
               <div className="space-y-0">
                 {tasks.map((task) => (
-                  <div key={task.id} className="p-6">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3">
-                          <h4 className="text-lg font-medium text-gray-900">{task.title}</h4>
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(task.priority)}`}>
+                  <div key={task.id} className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h4 className="text-base sm:text-lg font-medium text-gray-900">{task.title}</h4>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${getPriorityColor(task.priority)}`}>
                             {task.priority}
                           </span>
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(task.status, task.due_date)}`}>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${getStatusColor(task.status, task.due_date)}`}>
                             {task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed'
                               ? 'overdue'
                               : task.status.replace('_', ' ')
@@ -373,15 +373,15 @@ const AdminTaskManager = () => {
                         </div>
 
                         {task.description && (
-                          <p className="mt-2 text-gray-600 line-clamp-2">{task.description}</p>
+                          <p className="mt-2 text-sm sm:text-base text-gray-600 line-clamp-2">{task.description}</p>
                         )}
 
-                        <div className="mt-3 flex items-center space-x-6 text-sm text-gray-500">
-                          <span>Created by: {task.created_by_name}</span>
-                          <span>Due: {formatDate(task.due_date)}</span>
-                          <span>Assignments: {task.assignment_count || 0}</span>
+                        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs sm:text-sm text-gray-500">
+                          <span className="whitespace-nowrap">Created by: {task.created_by_name}</span>
+                          <span className="whitespace-nowrap">Due: {formatDate(task.due_date)}</span>
+                          <span className="whitespace-nowrap">Assignments: {task.assignment_count || 0}</span>
                           {task.completed_assignments > 0 && (
-                            <span className="text-green-600">
+                            <span className="text-green-600 whitespace-nowrap">
                               Completed: {task.completed_assignments}
                             </span>
                           )}
@@ -406,11 +406,11 @@ const AdminTaskManager = () => {
                           </div>
                         )}
                       </div>
-                      
-                      <div className="flex space-x-2 ml-4">
+
+                      <div className="flex flex-row sm:flex-col gap-2 sm:ml-4">
                         <button
                           onClick={() => handleEditTask(task)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+                          className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors whitespace-nowrap"
                         >
                           Edit
                         </button>
@@ -422,7 +422,7 @@ const AdminTaskManager = () => {
                               setShowDeleteConfirm(task);
                             }
                           }}
-                          className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                          className={`flex-1 sm:flex-none px-3 py-1 rounded text-sm font-medium transition-colors whitespace-nowrap ${
                             task.status === 'completed'
                               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                               : 'bg-red-600 hover:bg-red-700 text-white'
@@ -433,9 +433,9 @@ const AdminTaskManager = () => {
                         </button>
                         <button
                           onClick={() => setSelectedTask(task)}
-                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+                          className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors whitespace-nowrap"
                         >
-                          View Details
+                          Details
                         </button>
                       </div>
                     </div>
@@ -461,11 +461,11 @@ const AdminTaskManager = () => {
 
       {/* Create Task Form */}
       {view === 'create' && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-6">Create New Task</h3>
-          
-          <form onSubmit={handleCreateTask} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-4 sm:mb-6">Create New Task</h3>
+
+          <form onSubmit={handleCreateTask} className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Task Title *
@@ -546,18 +546,18 @@ const AdminTaskManager = () => {
               </div>
             </div>
 
-            <div className="flex justify-end space-x-3">
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3">
               <button
                 type="button"
                 onClick={() => setView('list')}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                className="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                className="w-full sm:w-auto bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 {submitting ? 'Creating...' : 'Create Task'}
               </button>
