@@ -370,7 +370,7 @@ const AdminCalendarManager = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
           {error}
@@ -378,12 +378,12 @@ const AdminCalendarManager = () => {
       )}
 
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Event Management</h2>
-        <div className="flex space-x-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Event Management</h2>
+        <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             onClick={() => setView('list')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               view === 'list'
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -393,7 +393,7 @@ const AdminCalendarManager = () => {
           </button>
           <button
             onClick={() => setView('calendar')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               view === 'calendar'
                 ? 'bg-blue-600 text-white'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -406,7 +406,7 @@ const AdminCalendarManager = () => {
               resetForm();
               setView('create');
             }}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               view === 'create'
                 ? 'bg-green-600 text-white'
                 : 'bg-green-600 text-white hover:bg-green-700'
@@ -435,12 +435,12 @@ const AdminCalendarManager = () => {
           ) : (
             <div className="divide-y divide-gray-200">
               {events.map((event) => (
-                <div key={event.id} className="p-6 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">{event.title}</h3>
-                        <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                <div key={event.id} className="p-4 sm:p-6 hover:bg-gray-50">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900">{event.title}</h3>
+                        <span className={`px-2 sm:px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap ${
                           event.event_type === 'volunteer_event' ? 'bg-green-100 text-green-800' :
                           event.event_type === 'meeting' ? 'bg-blue-100 text-blue-800' :
                           event.event_type === 'training' ? 'bg-yellow-100 text-yellow-800' :
@@ -449,41 +449,41 @@ const AdminCalendarManager = () => {
                           {event.event_type.replace('_', ' ')}
                         </span>
                       </div>
-                      
-                      <div className="text-sm text-gray-600 space-y-1">
-                        <div className="flex items-center space-x-4">
-                          <span>📅 {formatDate(event.start_date)}</span>
+
+                      <div className="text-xs sm:text-sm text-gray-600 space-y-1">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                          <span className="whitespace-nowrap">📅 {formatDate(event.start_date)}</span>
                           {!event.is_all_day && event.start_time && (
-                            <span>🕐 {formatTime(event.start_time)}</span>
+                            <span className="whitespace-nowrap">🕐 {formatTime(event.start_time)}</span>
                           )}
                           {event.location && (
-                            <span>📍 {event.location}</span>
+                            <span className="whitespace-nowrap">📍 {event.location}</span>
                           )}
                         </div>
-                        
+
                         {event.description && event.description.includes('Join Meeting:') && (
                           <div className="text-blue-600">🎥 Video meeting included</div>
                         )}
-                        
-                        <div className="flex items-center space-x-4">
-                          <span>{event.confirmed_signups || 0} signed up</span>
+
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                          <span className="whitespace-nowrap">{event.confirmed_signups || 0} signed up</span>
                           {event.max_volunteers && (
-                            <span>/ {event.max_volunteers} max</span>
+                            <span className="whitespace-nowrap">/ {event.max_volunteers} max</span>
                           )}
                         </div>
                       </div>
                     </div>
-                    
-                    <div className="flex space-x-2">
+
+                    <div className="flex flex-row sm:flex-col gap-2">
                       <button
                         onClick={() => handleEditEvent(event)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+                        className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors whitespace-nowrap"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDeleteEvent(event.id)}
-                        className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+                        className="flex-1 sm:flex-none bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors whitespace-nowrap"
                       >
                         Delete
                       </button>

@@ -252,7 +252,7 @@ const AdminDocumentManager = () => {
         <div className="flex space-x-3">
           <button
             onClick={() => setView('list')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               view === 'list' 
                 ? 'bg-blue-600 text-white' 
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -265,7 +265,7 @@ const AdminDocumentManager = () => {
               resetUploadForm();
               setView('upload');
             }}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               view === 'upload' 
                 ? 'bg-green-600 text-white' 
                 : 'bg-green-600 text-white hover:bg-green-700'
