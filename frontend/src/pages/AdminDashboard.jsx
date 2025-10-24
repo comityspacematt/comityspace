@@ -213,18 +213,18 @@ const AdminDashboard = () => {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-gray-900">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-1 sm:space-y-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
                 Admin Dashboard
               </h1>
               {dashboardData?.organization && (
-                <span className="text-gray-500">
+                <span className="text-sm sm:text-base text-gray-500">
                   · {dashboardData.organization.name}
                 </span>
               )}
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <span className="text-xs sm:text-sm text-gray-600 hidden sm:inline">
                 Welcome, {user?.firstName || 'Admin'}
               </span>
               <button
@@ -240,8 +240,8 @@ const AdminDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Tab Navigation */}
-        <div className="border-b border-gray-200 mb-8">
-          <nav className="-mb-px flex space-x-8">
+        <div className="border-b border-gray-200 mb-8 overflow-x-auto">
+          <nav className="-mb-px flex space-x-4 sm:space-x-8">
             <button
               onClick={() => navigate('/admin-dashboard/overview')}
               className={`py-2 px-1 border-b-2 font-medium text-sm ${
@@ -299,67 +299,67 @@ const AdminDashboard = () => {
         {activeTab === 'overview' && (
           <div className="space-y-6">
             {/* Welcome Section */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            <div className="mb-6 sm:mb-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
                 Welcome back, {user?.firstName || 'Admin'}! 👋
               </h2>
-              <p className="text-gray-600">
+              <p className="text-sm sm:text-base text-gray-600">
                 Here's what's happening in your organization
               </p>
             </div>
 
             {/* Quick Stats - Admin Version */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-blue-50">
-                    <div className="text-2xl">👥</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
+              <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <div className="p-2 sm:p-3 rounded-full bg-blue-50 mb-2 sm:mb-0 self-start">
+                    <div className="text-xl sm:text-2xl">👥</div>
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Total Volunteers</p>
-                    <p className="text-2xl font-semibold text-gray-900">
+                  <div className="sm:ml-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Total Volunteers</p>
+                    <p className="text-xl sm:text-2xl font-semibold text-gray-900">
                       {dashboardData?.volunteerStats?.total_volunteers || '0'}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-yellow-50">
-                    <div className="text-2xl">📋</div>
+              <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <div className="p-2 sm:p-3 rounded-full bg-yellow-50 mb-2 sm:mb-0 self-start">
+                    <div className="text-xl sm:text-2xl">📋</div>
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Active Tasks</p>
-                    <p className="text-2xl font-semibold text-gray-900">
+                  <div className="sm:ml-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Active Tasks</p>
+                    <p className="text-xl sm:text-2xl font-semibold text-gray-900">
                       {dashboardData?.taskOverview?.total_tasks || '0'}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-green-50">
-                    <div className="text-2xl">✅</div>
+              <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <div className="p-2 sm:p-3 rounded-full bg-green-50 mb-2 sm:mb-0 self-start">
+                    <div className="text-xl sm:text-2xl">✅</div>
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">Completed</p>
-                    <p className="text-2xl font-semibold text-gray-900">
+                  <div className="sm:ml-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">Completed</p>
+                    <p className="text-xl sm:text-2xl font-semibold text-gray-900">
                       {dashboardData?.taskOverview?.completed_assignments || '0'}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-lg shadow p-6">
-                <div className="flex items-center">
-                  <div className="p-3 rounded-full bg-purple-50">
-                    <div className="text-2xl">📅</div>
+              <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center">
+                  <div className="p-2 sm:p-3 rounded-full bg-purple-50 mb-2 sm:mb-0 self-start">
+                    <div className="text-xl sm:text-2xl">📅</div>
                   </div>
-                  <div className="ml-4">
-                    <p className="text-sm font-medium text-gray-600">This Week</p>
-                    <p className="text-2xl font-semibold text-gray-900">
+                  <div className="sm:ml-4">
+                    <p className="text-xs sm:text-sm font-medium text-gray-600">This Week</p>
+                    <p className="text-xl sm:text-2xl font-semibold text-gray-900">
                       {dashboardData?.upcomingEvents?.length || '0'}
                     </p>
                   </div>
@@ -368,14 +368,14 @@ const AdminDashboard = () => {
             </div>
 
             {/* Main Dashboard Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
               {/* Recent Activity Section */}
               <div className="bg-white rounded-lg shadow">
-                <div className="px-6 py-4 border-b border-gray-200">
-                  <h3 className="text-lg font-medium text-gray-900">📋 Recent Activity</h3>
+                <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900">📋 Recent Activity</h3>
                 </div>
 
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   {dashboardData?.recentActivity?.length > 0 ? (
                     <div className="space-y-4">
                       {dashboardData.recentActivity.slice(0, 8).map((activity, index) => {
@@ -443,11 +443,11 @@ const AdminDashboard = () => {
 
               {/* Upcoming Events Section */}
               <div className="bg-white rounded-lg shadow">
-                <div className="px-6 py-4 border-b border-gray-200">
-                  <h3 className="text-lg font-medium text-gray-900">📅 Upcoming Events</h3>
+                <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900">📅 Upcoming Events</h3>
                 </div>
 
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   {dashboardData?.upcomingEvents?.length > 0 ? (
                     <div className="space-y-4">
                       {dashboardData.upcomingEvents.slice(0, 3).map((event, index) => (
@@ -490,11 +490,11 @@ const AdminDashboard = () => {
 
             {/* Documents Section */}
             <div className="bg-white rounded-lg shadow">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900">📄 Recent Documents</h3>
+              <div className="px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
+                <h3 className="text-base sm:text-lg font-medium text-gray-900">📄 Recent Documents</h3>
               </div>
 
-              <div className="p-6">
+              <div className="p-4 sm:p-6">
                 {documentsLoading ? (
                   <div className="text-center py-8">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
