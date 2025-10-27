@@ -68,10 +68,15 @@ const Documents = () => {
       previewUrl: null
     });
 
-    // Generate preview URL for the document
+    // Fetch document with authentication to create preview URL
     try {
-      const apiUrl = process.env.REACT_APP_API_URL || '/api';
-      const previewUrl = `${apiUrl}/documents/${document.id}/download`;
+      const response = await api.get(`/documents/${document.id}/download`, {
+        responseType: 'blob',
+      });
+
+      // Create object URL from blob
+      const blob = new Blob([response.data], { type: document.file_type });
+      const previewUrl = window.URL.createObjectURL(blob);
 
       setDocumentPreview(prev => ({
         ...prev,
@@ -82,17 +87,24 @@ const Documents = () => {
       console.error('Error generating preview:', error);
       setDocumentPreview(prev => ({
         ...prev,
-        loading: false
+        loading: false,
+        previewUrl: null
       }));
     }
   };
 
   // Close document preview modal
   const closeDocumentPreview = () => {
+    // Clean up object URL to prevent memory leaks
+    if (documentPreview.previewUrl) {
+      window.URL.revokeObjectURL(documentPreview.previewUrl);
+    }
+
     setDocumentPreview({
       isOpen: false,
       document: null,
-      loading: false
+      loading: false,
+      previewUrl: null
     });
   };
 
