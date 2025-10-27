@@ -60,12 +60,31 @@ const Documents = () => {
   };
 
   // Handle document preview
-  const handlePreviewDocument = (document) => {
+  const handlePreviewDocument = async (document) => {
     setDocumentPreview({
       isOpen: true,
       document: document,
-      loading: false
+      loading: true,
+      previewUrl: null
     });
+
+    // Generate preview URL for the document
+    try {
+      const apiUrl = process.env.REACT_APP_API_URL || '/api';
+      const previewUrl = `${apiUrl}/documents/${document.id}/download`;
+
+      setDocumentPreview(prev => ({
+        ...prev,
+        loading: false,
+        previewUrl: previewUrl
+      }));
+    } catch (error) {
+      console.error('Error generating preview:', error);
+      setDocumentPreview(prev => ({
+        ...prev,
+        loading: false
+      }));
+    }
   };
 
   // Close document preview modal
@@ -458,18 +477,57 @@ const Documents = () => {
                 </div>
               </div>
 
-              {/* Preview Notice */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                <div className="flex items-start">
-                  <div className="text-blue-600 mr-3 text-lg">ℹ️</div>
-                  <div>
-                    <h4 className="text-blue-800 font-medium">Document Preview</h4>
-                    <p className="text-blue-700 text-sm mt-1">
-                      This is a preview of the document information. To view the full content, please download the document using the button below.
-                    </p>
+              {/* Document Preview */}
+              {documentPreview.loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                  <p className="ml-4 text-gray-600">Loading preview...</p>
+                </div>
+              ) : documentPreview.previewUrl ? (
+                <div className="bg-gray-100 rounded-lg overflow-hidden">
+                  {/* PDF Preview */}
+                  {documentPreview.document.file_type.includes('pdf') && (
+                    <iframe
+                      src={documentPreview.previewUrl}
+                      className="w-full h-[500px] border-0"
+                      title="PDF Preview"
+                    />
+                  )}
+
+                  {/* Image Preview */}
+                  {documentPreview.document.file_type.includes('image') && (
+                    <img
+                      src={documentPreview.previewUrl}
+                      alt={documentPreview.document.title}
+                      className="w-full h-auto max-h-[500px] object-contain"
+                    />
+                  )}
+
+                  {/* Other file types notice */}
+                  {!documentPreview.document.file_type.includes('pdf') &&
+                   !documentPreview.document.file_type.includes('image') && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+                      <div className="text-blue-600 text-4xl mb-3">{getFileIcon(documentPreview.document.file_type)}</div>
+                      <h4 className="text-blue-800 font-medium mb-2">Preview Not Available</h4>
+                      <p className="text-blue-700 text-sm">
+                        Preview is not available for this file type. Please download the document to view its contents.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="flex items-start">
+                    <div className="text-blue-600 mr-3 text-lg">ℹ️</div>
+                    <div>
+                      <h4 className="text-blue-800 font-medium">Document Preview</h4>
+                      <p className="text-blue-700 text-sm mt-1">
+                        Unable to load preview. Please download the document to view its contents.
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Modal Footer */}
