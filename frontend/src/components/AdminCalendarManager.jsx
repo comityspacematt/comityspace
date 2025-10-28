@@ -138,6 +138,23 @@ const AdminCalendarManager = () => {
     }
   };
 
+  const handleViewRSVPs = async (event) => {
+    try {
+      // Fetch full event details including RSVPs
+      const response = await api.get(`/calendar/events/${event.id}`);
+
+      if (response.data.success) {
+        setSelectedEvent(response.data.event);
+        setView('view');
+      } else {
+        setError(response.data.message || 'Failed to load event details');
+      }
+    } catch (error) {
+      console.error('Error loading event details:', error);
+      setError('Failed to load event details');
+    }
+  };
+
   const handleEditEvent = async (event) => {
     try {
       // Fetch full event details
@@ -151,7 +168,7 @@ const AdminCalendarManager = () => {
         const videoLinkMatch = description.match(/Join Meeting: (https?:\/\/[^\s\n]+)/);
         const meetingIdMatch = description.match(/Meeting ID: ([^\s\n]+)/);
         const passcodeMatch = description.match(/Passcode: ([^\s\n]+)/);
-        
+
         // Clean description by removing video meeting info
         const cleanDescription = description
           .replace(/\n\nJoin Meeting: https?:\/\/[^\s\n]+/, '')
@@ -462,6 +479,12 @@ const AdminCalendarManager = () => {
                     </div>
 
                     <div className="flex flex-row sm:flex-col gap-2">
+                      <button
+                        onClick={() => handleViewRSVPs(event)}
+                        className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors whitespace-nowrap"
+                      >
+                        👥 RSVPs
+                      </button>
                       <button
                         onClick={() => handleEditEvent(event)}
                         className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors whitespace-nowrap"
@@ -788,6 +811,141 @@ const AdminCalendarManager = () => {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* View Event RSVPs */}
+      {view === 'view' && selectedEvent && (
+        <div className="bg-white rounded-lg shadow p-6">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900">{selectedEvent.title}</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                {new Date(selectedEvent.start_date).toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+                {!selectedEvent.is_all_day && selectedEvent.start_time && (
+                  <span> at {new Date(`2000-01-01T${selectedEvent.start_time}`).toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                  })}</span>
+                )}
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                setView('list');
+                setSelectedEvent(null);
+              }}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* Event Details */}
+          <div className="mb-6 space-y-3">
+            {selectedEvent.location && (
+              <div className="flex items-start">
+                <span className="text-gray-600 w-24 flex-shrink-0">📍 Location:</span>
+                <span className="text-gray-900">{selectedEvent.location}</span>
+              </div>
+            )}
+            {selectedEvent.description && (
+              <div className="flex items-start">
+                <span className="text-gray-600 w-24 flex-shrink-0">📝 Details:</span>
+                <span className="text-gray-900 whitespace-pre-wrap">{selectedEvent.description}</span>
+              </div>
+            )}
+            <div className="flex items-start">
+              <span className="text-gray-600 w-24 flex-shrink-0">👥 Capacity:</span>
+              <span className="text-gray-900">
+                {selectedEvent.confirmed_signups || 0} signed up
+                {selectedEvent.max_volunteers && ` / ${selectedEvent.max_volunteers} max`}
+              </span>
+            </div>
+          </div>
+
+          {/* RSVPs List */}
+          <div>
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">
+              RSVPs ({selectedEvent.attendees?.length || 0})
+            </h4>
+
+            {selectedEvent.attendees && selectedEvent.attendees.length > 0 ? (
+              <div className="space-y-3">
+                {selectedEvent.attendees.map((attendee) => (
+                  <div
+                    key={attendee.id}
+                    className={`p-4 rounded-lg border ${
+                      attendee.status === 'signed_up'
+                        ? 'bg-green-50 border-green-200'
+                        : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-gray-900">
+                            {attendee.first_name} {attendee.last_name}
+                          </span>
+                          <span className={`text-xs px-2 py-1 rounded-full ${
+                            attendee.status === 'signed_up'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {attendee.status === 'signed_up' ? '✓ Attending' : 'Cancelled'}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">{attendee.email}</div>
+                        {attendee.notes && (
+                          <div className="text-sm text-gray-700 mt-2 italic">
+                            Note: {attendee.notes}
+                          </div>
+                        )}
+                        <div className="text-xs text-gray-500 mt-1">
+                          RSVP'd {new Date(attendee.signup_date).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <div className="text-4xl mb-2">👥</div>
+                <p>No RSVPs yet for this event</p>
+              </div>
+            )}
+          </div>
+
+          {/* Actions */}
+          <div className="mt-6 pt-4 border-t border-gray-200 flex gap-3">
+            <button
+              onClick={() => {
+                setView('list');
+                setSelectedEvent(null);
+              }}
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Back to List
+            </button>
+            <button
+              onClick={() => handleEditEvent(selectedEvent)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Edit Event
+            </button>
+          </div>
         </div>
       )}
     </div>
