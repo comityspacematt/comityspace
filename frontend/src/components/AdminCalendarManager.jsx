@@ -330,7 +330,7 @@ const AdminCalendarManager = () => {
                 {dayEvents.slice(0, 2).map(event => (
                   <div
                     key={event.id}
-                    onClick={() => handleEditEvent(event)}
+                    onClick={() => handleViewRSVPs(event)}
                     className={`text-xs p-1 rounded cursor-pointer truncate ${
                       event.event_type === 'volunteer_event' ? 'bg-green-100 text-green-800' :
                       event.event_type === 'meeting' ? 'bg-blue-100 text-blue-800' :
