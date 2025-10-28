@@ -38,22 +38,6 @@ const AdminCalendarManager = () => {
     }
   }, [selectedDate, view]);
 
-  // Navigate to current month when switching to calendar view for first time
-  useEffect(() => {
-    if (view === 'calendar') {
-      const now = new Date();
-      const currentMonth = now.getMonth();
-      const currentYear = now.getFullYear();
-      const selectedMonth = selectedDate.getMonth();
-      const selectedYear = selectedDate.getFullYear();
-
-      // If we're not viewing the current month, navigate to it
-      if (currentMonth !== selectedMonth || currentYear !== selectedYear) {
-        setSelectedDate(new Date());
-      }
-    }
-  }, [view, selectedDate]);
-
   const fetchEvents = async () => {
     try {
       setLoading(true);
