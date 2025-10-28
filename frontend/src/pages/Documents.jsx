@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
+import VolunteerNav from '../components/VolunteerNav';
 
 const Documents = () => {
   const { user, logout } = useAuth();
@@ -157,64 +157,7 @@ const Documents = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        {/* Header */}
-        <div className="bg-white shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center space-x-4">
-                <h1 className="text-xl font-semibold text-gray-900">
-                  {user?.organizationName} - Documents
-                </h1>
-              </div>
-
-              {/* Navigation */}
-              <div className="flex items-center space-x-4">
-                <Link
-                  to="/dashboard"
-                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  🏠 Dashboard
-                </Link>
-                <Link
-                  to="/volunteers"
-                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  👥 Volunteers
-                </Link>
-                <Link
-                  to="/my-tasks"
-                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  ✅ My Tasks
-                </Link>
-                <Link
-                  to="/calendar"
-                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  📅 Calendar
-                </Link>
-                <Link
-                  to="/documents"
-                  className="bg-blue-100 text-blue-800 px-3 py-2 rounded-md text-sm font-medium"
-                >
-                  📄 Documents
-                </Link>
-
-                <div className="flex items-center space-x-3 border-l border-gray-200 pl-4">
-                  <span className="text-sm text-gray-600">
-                    {user?.firstName || user?.email}
-                  </span>
-                  <button
-                    onClick={logout}
-                    className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    Logout
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <VolunteerNav currentPage="Documents" />
 
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
@@ -228,67 +171,7 @@ const Documents = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-xl font-semibold text-gray-900">
-                {user?.organizationName} - Documents
-              </h1>
-            </div>
-
-            {/* Navigation */}
-            <div className="flex items-center space-x-4">
-              <Link
-                to="/dashboard"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                🏠 Dashboard
-              </Link>
-              <Link
-                to="/volunteers"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                👥 Volunteers
-              </Link>
-              <Link
-                to="/my-tasks"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                ✅ My Tasks
-              </Link>
-              <Link
-                to="/calendar"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                📅 Calendar
-              </Link>
-              <Link
-                to="/documents"
-                className="bg-blue-100 text-blue-800 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                📄 Documents
-              </Link>
-
-              <div className="flex items-center space-x-3 border-l border-gray-200 pl-4">
-                <Link
-                  to="/profile"
-                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  {user?.firstName || user?.email}
-                </Link>
-                <button
-                  onClick={logout}
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <VolunteerNav currentPage="Documents" />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
