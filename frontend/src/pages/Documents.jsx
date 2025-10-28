@@ -358,51 +358,51 @@ const Documents = () => {
           ) : (
             <div className="divide-y divide-gray-200">
               {filteredDocuments.map((doc) => (
-                <div key={doc.id} className="p-6 hover:bg-gray-50">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-start space-x-4 flex-1">
-                      <div className="text-3xl">{getFileIcon(doc.file_type)}</div>
+                <div key={doc.id} className="p-4 sm:p-6 hover:bg-gray-50">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex items-start space-x-3 sm:space-x-4 flex-1 min-w-0">
+                      <div className="text-2xl sm:text-3xl flex-shrink-0">{getFileIcon(doc.file_type)}</div>
 
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <h3 className="text-lg font-semibold text-gray-900">{doc.title}</h3>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-900">{doc.title}</h3>
                           {doc.is_pinned && (
-                            <span className="text-yellow-500 text-sm">📌 Pinned</span>
+                            <span className="text-yellow-500 text-xs sm:text-sm whitespace-nowrap">📌 Pinned</span>
                           )}
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(doc.category)}`}>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${getCategoryColor(doc.category)}`}>
                             {doc.category}
                           </span>
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getVisibilityColor(doc.visibility)}`}>
+                          <span className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${getVisibilityColor(doc.visibility)}`}>
                             {doc.visibility.replace('_', ' ')}
                           </span>
                         </div>
 
-                        <div className="text-sm text-gray-600 space-y-1">
+                        <div className="text-xs sm:text-sm text-gray-600 space-y-1">
                           {doc.description && (
                             <p className="mb-2">{doc.description}</p>
                           )}
-                          <div className="flex items-center space-x-4">
-                            <span>📁 {doc.file_name}</span>
-                            <span>📏 {doc.file_size_mb} MB</span>
-                            <span>📅 {new Date(doc.created_at).toLocaleDateString()}</span>
+                          <div className="flex flex-wrap gap-x-3 gap-y-1">
+                            <span className="whitespace-nowrap">📁 {doc.file_name}</span>
+                            <span className="whitespace-nowrap">📏 {doc.file_size_mb} MB</span>
+                            <span className="whitespace-nowrap">📅 {new Date(doc.created_at).toLocaleDateString()}</span>
                             {doc.uploader_name && (
-                              <span>👤 {doc.uploader_name} {doc.uploader_lastname}</span>
+                              <span className="whitespace-nowrap">👤 {doc.uploader_name} {doc.uploader_lastname}</span>
                             )}
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="ml-4 flex space-x-2">
+                    <div className="flex flex-row sm:flex-col gap-2 sm:ml-4">
                       <button
                         onClick={() => handlePreviewDocument(doc)}
-                        className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                        className="flex-1 sm:flex-none bg-gray-600 hover:bg-gray-700 text-white px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap"
                       >
                         👁️ Preview
                       </button>
                       <button
                         onClick={() => handleDownload(doc.id, doc.file_name)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                        className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap"
                       >
                         📥 Download
                       </button>
