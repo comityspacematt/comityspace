@@ -223,54 +223,58 @@ const VolunteerDashboard = () => {
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
+          <div className="flex items-center h-16">
+            {/* Title - Hidden on mobile, shown on larger screens */}
+            <div className="hidden lg:flex items-center space-x-4 flex-shrink-0">
               <h1 className="text-xl font-semibold text-gray-900">
                 {user?.organizationName} - Volunteer Portal
               </h1>
             </div>
 
-            {/* Navigation */}
-            <div className="flex items-center space-x-4">
-              <Link
-                to="/volunteers"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                👥 Volunteers
-              </Link>
-              <Link
-                to="/my-tasks"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                ✅ My Tasks
-              </Link>
-              <Link
-                to="/calendar"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                📅 Calendar
-              </Link>
-              <Link
-                to="/documents"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
-              >
-                📄 Documents
-              </Link>
-
-              <div className="flex items-center space-x-3 border-l border-gray-200 pl-4">
+            {/* Scrollable Navigation Links - grows to fill space */}
+            <div className="flex-1 overflow-x-auto scrollbar-hide">
+              <div className="flex items-center space-x-2 lg:space-x-4 lg:ml-8">
                 <Link
-                  to="/profile"
-                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                  to="/volunteers"
+                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap"
                 >
-                  {user?.firstName || user?.email}
+                  👥 Volunteers
                 </Link>
-                <button
-                  onClick={logout}
-                  className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                <Link
+                  to="/my-tasks"
+                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap"
                 >
-                  Logout
-                </button>
+                  ✅ My Tasks
+                </Link>
+                <Link
+                  to="/calendar"
+                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap"
+                >
+                  📅 Calendar
+                </Link>
+                <Link
+                  to="/documents"
+                  className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium whitespace-nowrap"
+                >
+                  📄 Documents
+                </Link>
               </div>
+            </div>
+
+            {/* Fixed Right Section - Profile & Logout */}
+            <div className="flex items-center space-x-2 lg:space-x-3 border-l border-gray-200 pl-2 lg:pl-4 ml-2 lg:ml-4 flex-shrink-0">
+              <Link
+                to="/profile"
+                className="text-xs lg:text-sm text-gray-600 hover:text-gray-900 transition-colors whitespace-nowrap"
+              >
+                {user?.firstName || user?.email}
+              </Link>
+              <button
+                onClick={logout}
+                className="bg-red-600 hover:bg-red-700 text-white px-2 lg:px-3 py-2 rounded-md text-xs lg:text-sm font-medium transition-colors whitespace-nowrap"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
