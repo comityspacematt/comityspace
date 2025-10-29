@@ -144,7 +144,11 @@ const AdminCalendarManager = () => {
       const response = await api.get(`/calendar/events/${event.id}`);
 
       if (response.data.success) {
-        setSelectedEvent(response.data.event);
+        // Include attendees in the event object
+        setSelectedEvent({
+          ...response.data.event,
+          attendees: response.data.attendees
+        });
         setView('view');
       } else {
         setError(response.data.message || 'Failed to load event details');
@@ -468,13 +472,6 @@ const AdminCalendarManager = () => {
                         {event.description && event.description.includes('Join Meeting:') && (
                           <div className="text-blue-600">🎥 Video meeting included</div>
                         )}
-
-                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                          <span className="whitespace-nowrap">{event.confirmed_signups || 0} signed up</span>
-                          {event.max_volunteers && (
-                            <span className="whitespace-nowrap">/ {event.max_volunteers} max</span>
-                          )}
-                        </div>
                       </div>
                     </div>
 
@@ -862,13 +859,6 @@ const AdminCalendarManager = () => {
                 <span className="text-gray-900 whitespace-pre-wrap">{selectedEvent.description}</span>
               </div>
             )}
-            <div className="flex items-start">
-              <span className="text-gray-600 w-24 flex-shrink-0">👥 Capacity:</span>
-              <span className="text-gray-900">
-                {selectedEvent.confirmed_signups || 0} signed up
-                {selectedEvent.max_volunteers && ` / ${selectedEvent.max_volunteers} max`}
-              </span>
-            </div>
           </div>
 
           {/* RSVPs List */}
