@@ -9,7 +9,7 @@ const Calendar = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [view, setView] = useState('month');
+  const [view, setView] = useState('list');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
   const [rsvpLoading, setRsvpLoading] = useState(false);
@@ -205,16 +205,6 @@ const Calendar = () => {
             {/* View Toggle */}
             <div className="flex bg-gray-100 rounded-lg p-1">
               <button
-                onClick={() => setView('month')}
-                className={`px-4 py-2 rounded-md transition-colors ${
-                  view === 'month'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                Month
-              </button>
-              <button
                 onClick={() => setView('list')}
                 className={`px-4 py-2 rounded-md transition-colors ${
                   view === 'list'
@@ -223,6 +213,16 @@ const Calendar = () => {
                 }`}
               >
                 List
+              </button>
+              <button
+                onClick={() => setView('month')}
+                className={`px-4 py-2 rounded-md transition-colors ${
+                  view === 'month'
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Month
               </button>
             </div>
           </div>
