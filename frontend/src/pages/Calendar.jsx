@@ -27,11 +27,20 @@ const Calendar = () => {
       setLoading(true);
       setError('');
 
-      const params = new URLSearchParams({
-        month: currentMonth,
-        year: currentYear,
-        view: view
-      });
+      let params;
+      if (view === 'list') {
+        // For list view, show all upcoming events
+        params = new URLSearchParams({
+          upcoming: 'true'
+        });
+      } else {
+        // For calendar/month view, filter by selected month
+        params = new URLSearchParams({
+          month: currentMonth,
+          year: currentYear,
+          view: view
+        });
+      }
 
       const response = await api.get(`/calendar/events?${params}`);
 
@@ -184,23 +193,25 @@ const Calendar = () => {
           )}
 
           {/* Controls */}
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            {/* Month Navigation */}
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigateMonth(-1)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                ←
-              </button>
-              <h3 className="text-xl font-semibold min-w-48 text-center">{monthName}</h3>
-              <button
-                onClick={() => navigateMonth(1)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                →
-              </button>
-            </div>
+          <div className={`flex flex-col sm:flex-row items-center gap-4 ${view === 'list' ? 'justify-end' : 'justify-between'}`}>
+            {/* Month Navigation - only show in calendar view */}
+            {view === 'month' && (
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => navigateMonth(-1)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  ←
+                </button>
+                <h3 className="text-xl font-semibold min-w-48 text-center">{monthName}</h3>
+                <button
+                  onClick={() => navigateMonth(1)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  →
+                </button>
+              </div>
+            )}
 
             {/* View Toggle */}
             <div className="flex bg-gray-100 rounded-lg p-1">
@@ -277,7 +288,7 @@ const Calendar = () => {
           <div className="space-y-4">
             {events.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
-                No events found for {monthName}
+                No upcoming events found
               </div>
             ) : (
               events.map(event => (
