@@ -175,6 +175,66 @@ const AdminVolunteerManager = ({ dashboardData, onRefreshData }) => {
     });
   };
 
+  // Export volunteers to CSV
+  const handleExportDirectory = () => {
+    if (!volunteers || volunteers.length === 0) {
+      alert('No volunteers to export');
+      return;
+    }
+
+    // CSV headers
+    const headers = ['Name', 'Email', 'Phone', 'Address', 'Birthday', 'Role', 'Last Login', 'Admin Notes'];
+
+    // Convert volunteers data to CSV rows
+    const rows = volunteers.map(volunteer => {
+      const name = getVolunteerName(volunteer);
+      const email = volunteer.email || '';
+      const phone = volunteer.phone && volunteer.phone !== 'Not provided' ? volunteer.phone : '';
+      const address = volunteer.address || '';
+      const birthday = volunteer.birthday || '';
+      const role = volunteer.role === 'nonprofit_admin' ? 'Admin' : 'Volunteer';
+      const lastLogin = formatLastLogin(volunteer.lastLogin);
+      const notes = getAdminNotes(volunteer);
+
+      // Escape double quotes and wrap fields in quotes
+      const escapeCSV = (field) => {
+        if (field === null || field === undefined) return '';
+        const stringField = String(field);
+        if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+          return `"${stringField.replace(/"/g, '""')}"`;
+        }
+        return stringField;
+      };
+
+      return [
+        escapeCSV(name),
+        escapeCSV(email),
+        escapeCSV(phone),
+        escapeCSV(address),
+        escapeCSV(birthday),
+        escapeCSV(role),
+        escapeCSV(lastLogin),
+        escapeCSV(notes)
+      ].join(',');
+    });
+
+    // Combine headers and rows
+    const csv = [headers.join(','), ...rows].join('\n');
+
+    // Create blob and download
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `volunteers-directory-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const handleAddVolunteer = async (e) => {
     e.preventDefault();
     try {
@@ -646,7 +706,10 @@ const AdminVolunteerManager = ({ dashboardData, onRefreshData }) => {
             <h5 className="font-medium text-gray-900">Send Newsletter</h5>
             <p className="text-sm text-gray-600">Email all volunteers with updates</p>
           </button>
-          <button className="text-left p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow">
+          <button
+            onClick={handleExportDirectory}
+            className="text-left p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+          >
             <div className="text-green-600 text-xl mb-2">📊</div>
             <h5 className="font-medium text-gray-900">Export Directory</h5>
             <p className="text-sm text-gray-600">Download volunteer contact list</p>
