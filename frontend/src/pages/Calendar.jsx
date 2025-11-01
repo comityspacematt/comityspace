@@ -98,8 +98,30 @@ const Calendar = () => {
     }
   };
 
-  const exportEvent = (eventId) => {
-    window.open(`${process.env.REACT_APP_API_URL}/calendar/events/${eventId}/export`, '_blank');
+  const exportEvent = async (eventId) => {
+    try {
+      const response = await api.get(`/calendar/events/${eventId}/export`, {
+        responseType: 'blob'
+      });
+
+      // Create a blob from the response
+      const blob = new Blob([response.data], { type: 'text/calendar' });
+      const url = window.URL.createObjectURL(blob);
+
+      // Create a temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `event-${eventId}.ics`;
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting event:', error);
+      setError('Failed to export event');
+    }
   };
 
   const navigateMonth = (direction) => {
