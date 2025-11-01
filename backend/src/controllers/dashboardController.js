@@ -215,6 +215,8 @@ class DashboardController {
           u.first_name,
           u.last_name,
           u.phone,
+          u.address,
+          u.birth_date,
           w.role,
           u.last_login,
           u.login_count,
@@ -285,12 +287,21 @@ class DashboardController {
             lastName = volunteer.last_name;
           }
 
+          // Format birth_date as YYYY-MM-DD for HTML date input compatibility
+          let formattedBirthday = '';
+          if (volunteer.birth_date) {
+            const date = new Date(volunteer.birth_date);
+            formattedBirthday = date.toISOString().split('T')[0];
+          }
+
           const result = {
             id: volunteer.id,
             email: volunteer.email,
             firstName: firstName,
             lastName: lastName,
             phone: volunteer.phone || 'Not provided',
+            address: volunteer.address || '',
+            birthday: formattedBirthday,
             role: volunteer.role,
             isActive: volunteer.login_count > 0,
             lastLogin: volunteer.last_login,
