@@ -11,6 +11,8 @@ const VolunteersDirectory = () => {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('all');
+  const [selectedVolunteer, setSelectedVolunteer] = useState(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   // Load volunteers directory
   useEffect(() => {
@@ -96,6 +98,23 @@ const VolunteersDirectory = () => {
       default:
         return role;
     }
+  };
+
+  // Handle volunteer click to show profile
+  const handleVolunteerClick = (volunteer) => {
+    setSelectedVolunteer(volunteer);
+    setShowProfileModal(true);
+  };
+
+  // Format birthday for display
+  const formatBirthday = (birthday) => {
+    if (!birthday) return 'Not provided';
+    const date = new Date(birthday);
+    return date.toLocaleDateString('en-US', {
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric'
+    });
   };
 
   if (loading) {
@@ -197,7 +216,11 @@ const VolunteersDirectory = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredVolunteers.length > 0 ? (
             filteredVolunteers.map((volunteer, index) => (
-              <div key={volunteer.id || index} className="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+              <div
+                key={volunteer.id || index}
+                onClick={() => handleVolunteerClick(volunteer)}
+                className="bg-white rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer"
+              >
                 <div className="p-6">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
@@ -297,6 +320,102 @@ const VolunteersDirectory = () => {
                     {volunteers.filter(v => v.role === 'volunteer').length}
                   </div>
                   <div className="text-sm text-gray-600">Volunteers</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Profile Modal */}
+        {showProfileModal && selectedVolunteer && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg max-w-2xl w-full max-h-96 overflow-y-auto">
+              <div className="p-6">
+                {/* Modal Header */}
+                <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+                  <div className="flex items-center space-x-4">
+                    {/* Avatar */}
+                    <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center">
+                      <span className="text-primary-600 font-bold text-2xl">
+                        {selectedVolunteer.firstName.charAt(0)}{selectedVolunteer.lastName.charAt(0)}
+                      </span>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900">
+                        {selectedVolunteer.firstName} {selectedVolunteer.lastName}
+                      </h2>
+                      <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full mt-1 ${getRoleBadgeColor(selectedVolunteer.role)}`}>
+                        {getRoleDisplayName(selectedVolunteer.role)}
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowProfileModal(false)}
+                    className="text-gray-400 hover:text-gray-600 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Profile Information */}
+                <div className="space-y-6">
+                  {/* Contact Information Section */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Contact Information</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-start">
+                        <div className="w-32 text-sm font-medium text-gray-600">Email:</div>
+                        <div className="flex-1 text-sm text-gray-900">{selectedVolunteer.email}</div>
+                      </div>
+                      <div className="flex items-start">
+                        <div className="w-32 text-sm font-medium text-gray-600">Phone:</div>
+                        <div className="flex-1 text-sm text-gray-900">
+                          {selectedVolunteer.phone && selectedVolunteer.phone !== 'Not provided'
+                            ? selectedVolunteer.phone
+                            : 'Not provided'}
+                        </div>
+                      </div>
+                      <div className="flex items-start">
+                        <div className="w-32 text-sm font-medium text-gray-600">Address:</div>
+                        <div className="flex-1 text-sm text-gray-900 whitespace-pre-line">
+                          {selectedVolunteer.address || 'Not provided'}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Personal Information Section */}
+                  <div className="pt-4 border-t border-gray-200">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Personal Information</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-start">
+                        <div className="w-32 text-sm font-medium text-gray-600">Birthday:</div>
+                        <div className="flex-1 text-sm text-gray-900">
+                          {formatBirthday(selectedVolunteer.birthday)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Admin Notes Section */}
+                  {selectedVolunteer.notes && (
+                    <div className="pt-4 border-t border-gray-200">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">Admin Notes</h3>
+                      <div className="text-sm text-gray-700 bg-gray-50 p-3 rounded-lg">
+                        {selectedVolunteer.notes}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Modal Actions */}
+                <div className="mt-6 pt-4 border-t border-gray-200 flex justify-end">
+                  <button
+                    onClick={() => setShowProfileModal(false)}
+                    className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             </div>
