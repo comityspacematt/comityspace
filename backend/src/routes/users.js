@@ -69,6 +69,13 @@ router.put('/profile', authenticateToken, async (req, res) => {
       [user.organization_id]
     );
 
+    // Format birth_date as YYYY-MM-DD for HTML date input
+    let formattedBirthday = '';
+    if (user.birth_date) {
+      const date = new Date(user.birth_date);
+      formattedBirthday = date.toISOString().split('T')[0];
+    }
+
     const responseUser = {
       id: user.id,
       email: user.email,
@@ -79,7 +86,7 @@ router.put('/profile', authenticateToken, async (req, res) => {
       lastName: user.last_name || '',
       phone: user.phone || '',
       address: user.address || '',
-      birthday: user.birth_date || '',
+      birthday: formattedBirthday,
       created_at: user.created_at,
       updated_at: user.updated_at
     };
@@ -124,6 +131,13 @@ router.get('/profile', authenticateToken, async (req, res) => {
 
     const user = result.rows[0];
 
+    // Format birth_date as YYYY-MM-DD for HTML date input
+    let formattedBirthday = '';
+    if (user.birth_date) {
+      const date = new Date(user.birth_date);
+      formattedBirthday = date.toISOString().split('T')[0];
+    }
+
     const responseUser = {
       id: user.id,
       email: user.email,
@@ -134,7 +148,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
       lastName: user.last_name || '',
       phone: user.phone || '',
       address: user.address || '',
-      birthday: user.birth_date || '',
+      birthday: formattedBirthday,
       created_at: user.created_at,
       updated_at: user.updated_at
     };
