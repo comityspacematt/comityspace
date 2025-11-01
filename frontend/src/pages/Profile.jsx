@@ -20,25 +20,13 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
-      // Parse user notes to get additional profile info
-      let notes = {};
-      try {
-        if (user.notes && typeof user.notes === 'string') {
-          notes = JSON.parse(user.notes);
-        } else if (user.notes && typeof user.notes === 'object') {
-          notes = user.notes;
-        }
-      } catch (e) {
-        console.log('Could not parse user notes:', e);
-      }
-
       setFormData({
-        firstName: notes.firstName || user.firstName || '',
-        lastName: notes.lastName || user.lastName || '',
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
         email: user.email || '',
-        phone: notes.phone || user.phone || '',
-        address: notes.address || '',
-        birthday: notes.birthday || ''
+        phone: user.phone || '',
+        address: user.address || '',
+        birthday: user.birthday || ''
       });
     }
   }, [user]);
