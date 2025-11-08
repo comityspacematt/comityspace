@@ -283,13 +283,12 @@ const AdminTaskManager = () => {
   // Export tasks to CSV
   const downloadCSV = () => {
     // CSV headers
-    const headers = ['Task ID', 'Title', 'Description', 'Status', 'Priority', 'Due Date', 'Assigned To', 'Created By', 'Created Date'];
+    const headers = ['Task ID', 'Title', 'Status', 'Priority', 'Due Date', 'Assigned To', 'Notes'];
 
     // Convert tasks data to CSV rows
     const rows = tasks.map(task => {
       const taskId = task.id || '';
       const title = task.title || '';
-      const description = task.description || '';
       const status = task.status || '';
       const priority = task.priority || '';
       const dueDate = task.due_date ? new Date(task.due_date).toLocaleDateString('en-US') : '';
@@ -299,8 +298,13 @@ const AdminTaskManager = () => {
         ? task.assignments.map(a => getAssignmentDisplayName(a)).join('; ')
         : 'Unassigned';
 
-      const createdBy = task.creator_name || 'Unknown';
-      const createdDate = task.created_at ? new Date(task.created_at).toLocaleDateString('en-US') : '';
+      // Get completion notes from assignments
+      const completionNotes = task.assignments && task.assignments.length > 0
+        ? task.assignments
+            .filter(a => a.completion_notes)
+            .map(a => `${getAssignmentDisplayName(a)}: ${a.completion_notes}`)
+            .join(' | ')
+        : '';
 
       // Escape double quotes and wrap fields in quotes
       const escapeCSV = (field) => {
@@ -315,13 +319,11 @@ const AdminTaskManager = () => {
       return [
         escapeCSV(taskId),
         escapeCSV(title),
-        escapeCSV(description),
         escapeCSV(status),
         escapeCSV(priority),
         escapeCSV(dueDate),
         escapeCSV(assignedTo),
-        escapeCSV(createdBy),
-        escapeCSV(createdDate)
+        escapeCSV(completionNotes)
       ].join(',');
     });
 
@@ -925,7 +927,12 @@ const AdminTaskManager = () => {
                             : 'Unassigned'}
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-900">
-                          {task.description || '-'}
+                          {task.assignments && task.assignments.length > 0
+                            ? task.assignments
+                                .filter(a => a.completion_notes)
+                                .map(a => `${getAssignmentDisplayName(a)}: ${a.completion_notes}`)
+                                .join(' | ') || '-'
+                            : '-'}
                         </td>
                       </tr>
                     ))}

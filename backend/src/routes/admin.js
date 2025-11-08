@@ -339,6 +339,8 @@ router.get('/tasks', async (req, res) => {
             ta.status,
             ta.created_at as assigned_at,
             ta.completed_at,
+            ta.completion_notes,
+            ta.user_id,
             assignee.email as user_email,
             -- Extract names from whitelist notes JSON with proper error handling
             CASE
