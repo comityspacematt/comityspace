@@ -896,7 +896,7 @@ const AdminTaskManager = () => {
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -905,9 +905,6 @@ const AdminTaskManager = () => {
                         <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{task.id}</td>
                         <td className="px-4 py-3 text-sm text-gray-900">
                           <div className="font-medium">{task.title}</div>
-                          {task.description && (
-                            <div className="text-gray-500 text-xs mt-1 line-clamp-2">{task.description}</div>
-                          )}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(task.status, task.due_date)}`}>
@@ -927,8 +924,8 @@ const AdminTaskManager = () => {
                             ? task.assignments.map(a => getAssignmentDisplayName(a)).join(', ')
                             : 'Unassigned'}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
-                          {task.creator_name || 'Unknown'}
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {task.description || '-'}
                         </td>
                       </tr>
                     ))}
