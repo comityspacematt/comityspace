@@ -270,6 +270,73 @@ const AdminTaskManager = () => {
     return assignment.user_name || 'Unknown User';
   };
 
+  // Export tasks to CSV
+  const handleExportReport = () => {
+    if (!tasks || tasks.length === 0) {
+      alert('No tasks to export');
+      return;
+    }
+
+    // CSV headers
+    const headers = ['Task ID', 'Title', 'Description', 'Status', 'Priority', 'Due Date', 'Assigned To', 'Created By', 'Created Date'];
+
+    // Convert tasks data to CSV rows
+    const rows = tasks.map(task => {
+      const taskId = task.id || '';
+      const title = task.title || '';
+      const description = task.description || '';
+      const status = task.status || '';
+      const priority = task.priority || '';
+      const dueDate = task.due_date ? new Date(task.due_date).toLocaleDateString('en-US') : '';
+
+      // Get assigned volunteers
+      const assignedTo = task.assignments && task.assignments.length > 0
+        ? task.assignments.map(a => getAssignmentDisplayName(a)).join('; ')
+        : 'Unassigned';
+
+      const createdBy = task.creator_name || 'Unknown';
+      const createdDate = task.created_at ? new Date(task.created_at).toLocaleDateString('en-US') : '';
+
+      // Escape double quotes and wrap fields in quotes
+      const escapeCSV = (field) => {
+        if (field === null || field === undefined) return '';
+        const stringField = String(field);
+        if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n')) {
+          return `"${stringField.replace(/"/g, '""')}"`;
+        }
+        return stringField;
+      };
+
+      return [
+        escapeCSV(taskId),
+        escapeCSV(title),
+        escapeCSV(description),
+        escapeCSV(status),
+        escapeCSV(priority),
+        escapeCSV(dueDate),
+        escapeCSV(assignedTo),
+        escapeCSV(createdBy),
+        escapeCSV(createdDate)
+      ].join(',');
+    });
+
+    // Combine headers and rows
+    const csv = [headers.join(','), ...rows].join('\n');
+
+    // Create blob and download
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+
+    link.setAttribute('href', url);
+    link.setAttribute('download', `tasks-report-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -283,7 +350,7 @@ const AdminTaskManager = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Task Management</h2>
-        <div className="flex space-x-2 sm:space-x-3 w-full sm:w-auto">
+        <div className="flex flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             onClick={() => setView('list')}
             className={`flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -303,6 +370,12 @@ const AdminTaskManager = () => {
             }`}
           >
             Create Task
+          </button>
+          <button
+            onClick={handleExportReport}
+            className="flex-1 sm:flex-none px-4 py-2 rounded-md text-sm font-medium transition-colors bg-green-600 hover:bg-green-700 text-white"
+          >
+            📊 Export Report
           </button>
         </div>
       </div>
