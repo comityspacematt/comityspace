@@ -41,6 +41,17 @@ const AdminTaskManager = () => {
 
       const data = await response.json();
       if (data.success) {
+        console.log('📋 Tasks data:', data.tasks);
+        // Debug completion notes
+        data.tasks.forEach(task => {
+          if (task.assignments && task.assignments.length > 0) {
+            console.log(`Task "${task.title}" assignments:`, task.assignments.map(a => ({
+              user: a.user_email,
+              status: a.status,
+              completion_notes: a.completion_notes
+            })));
+          }
+        });
         setTasks(data.tasks);
       } else {
         setError(data.message || 'Failed to load tasks');

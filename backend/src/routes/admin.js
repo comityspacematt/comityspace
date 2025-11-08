@@ -392,6 +392,8 @@ router.get('/tasks', async (req, res) => {
               last_name: assignment.user_last_name,
               user_name: assignment.user_name,
               email: assignment.user_email,
+              status: assignment.status,
+              completion_notes: assignment.completion_notes,
               whitelist_notes: assignment.whitelist_notes,
               whitelist_id: assignment.whitelist_id
             });
