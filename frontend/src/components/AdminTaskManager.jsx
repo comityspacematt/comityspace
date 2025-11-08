@@ -12,6 +12,7 @@ const AdminTaskManager = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(null);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   // Task form state
   const [taskForm, setTaskForm] = useState({
@@ -270,13 +271,17 @@ const AdminTaskManager = () => {
     return assignment.user_name || 'Unknown User';
   };
 
-  // Export tasks to CSV
+  // Show report modal
   const handleExportReport = () => {
     if (!tasks || tasks.length === 0) {
       alert('No tasks to export');
       return;
     }
+    setShowReportModal(true);
+  };
 
+  // Export tasks to CSV
+  const downloadCSV = () => {
     // CSV headers
     const headers = ['Task ID', 'Title', 'Description', 'Status', 'Priority', 'Due Date', 'Assigned To', 'Created By', 'Created Date'];
 
@@ -855,6 +860,95 @@ const AdminTaskManager = () => {
                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Mark Complete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Task Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-900">Tasks Report</h2>
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="text-gray-400 hover:text-gray-600 text-2xl"
+                >
+                  ×
+                </button>
+              </div>
+              <p className="text-sm text-gray-600 mt-1">
+                {tasks.length} task{tasks.length !== 1 ? 's' : ''} found
+              </p>
+            </div>
+
+            <div className="flex-1 overflow-auto p-6">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50 sticky top-0">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned To</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created By</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {tasks.map((task) => (
+                      <tr key={task.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{task.id}</td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          <div className="font-medium">{task.title}</div>
+                          {task.description && (
+                            <div className="text-gray-500 text-xs mt-1 line-clamp-2">{task.description}</div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadgeColor(task.status)}`}>
+                            {task.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPriorityBadgeColor(task.priority)}`}>
+                            {task.priority}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          {task.due_date ? new Date(task.due_date).toLocaleDateString('en-US') : '-'}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-900">
+                          {task.assignments && task.assignments.length > 0
+                            ? task.assignments.map(a => getAssignmentDisplayName(a)).join(', ')
+                            : 'Unassigned'}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                          {task.creator_name || 'Unknown'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-gray-200 flex justify-end space-x-3">
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                Close
+              </button>
+              <button
+                onClick={downloadCSV}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md text-sm font-medium transition-colors"
+              >
+                📥 Export to CSV
               </button>
             </div>
           </div>
